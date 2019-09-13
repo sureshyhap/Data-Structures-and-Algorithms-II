@@ -1,3 +1,12 @@
+// Suresh Yhap
+// Prof. Carl Sable
+// Data Structures and Algorithms II
+// Programming Assignment #1
+
+// This program uses a hash table that stores
+// a dictionary to be used for spell checking
+// a document.
+
 #include <iostream>
 #include "hash.h"
 #include <fstream>
