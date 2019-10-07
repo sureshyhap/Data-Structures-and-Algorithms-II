@@ -9,9 +9,9 @@ class heap {
  public:
   heap(int capacity);
   int insert(const std::string& id, int key, void* pv = nullptr);
-  /////////  int set_key(const std::string& id, int key);
-  int delete_min(std::string* p_id, int* p_key, void* pp_data = nullptr);
-  //////////// remove
+  int setKey(const std::string& id, int key);
+  int deleteMin(std::string* p_id = nullptr, int* p_key = nullptr, void* pp_data = nullptr);
+  int remove(const std::string& id, int* p_key = nullptr, void* pp_data = nullptr);
  private:
   class heap_node {
   public:
@@ -21,7 +21,7 @@ class heap {
   };
   void percolate_up(int current_pos);
   void percolate_down(int current_pos);
-  ////////////////////
+  int get_pos(heap_node* phn);
   int size = 0, capacity = 0;
   std::vector<heap_node> data;
   hashTable str_map;
