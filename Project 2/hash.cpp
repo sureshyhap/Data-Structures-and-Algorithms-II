@@ -49,12 +49,16 @@ void* hashTable::getPointer(const std::string& key, bool* b) {
   int index = findPos(key);
   // Key not found in table
   if (index == -1) {
-    *b = false;
+    if (b != nullptr) {
+      *b = false;
+    }
     return nullptr;
   }
   // Key found in table
   else {
-    *b = true;
+    if (b != nullptr) {
+      *b = true;
+    }
     return data[index].pv;
   }
 }
