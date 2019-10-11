@@ -17,10 +17,10 @@ int hashTable::insert(const std::string& key, void* pv) {
     }
   }
   int index = hash(key);
-  // While the cell is occupied and not deleted, linearly probe for any empty cell
-  while (data[index].isOccupied == true && data[index].isDeleted == false) {
+  // While the cell is occupied, linearly probe for any empty cell
+  while (data[index].isOccupied == true) {
     // If key is already in table return 1
-    if (data[index].key == key) {
+    if (data[index].key == key && data[index].isDeleted == false) {
       return 1;
     }
     ++index;
@@ -130,7 +130,6 @@ bool hashTable::rehash() {
     // into the newly resized data vector
     if (data2[i].isOccupied == true && data2[i].isDeleted == false) {
       insert(data2[i].key, data2[i].pv);
-      ++filled;
     }
   }
   return true;

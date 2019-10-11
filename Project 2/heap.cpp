@@ -2,7 +2,7 @@
 
 heap::heap(int capacity):str_map(capacity * 2) {
   this->capacity = capacity;
-  // Not using 0th element so allocate capaity + 1
+  // Not using 0th element so allocate capacity + 1
   // instead of just capacity
   data.resize(capacity + 1);
 }
@@ -96,8 +96,22 @@ int heap::remove(const std::string& id, int* p_key, void* pp_data) {
     *(static_cast<void**>(pp_data)) = phn->p_data;
   }
   // Change to be less than the minimum and then call deleteMin
-  setKey(id, data[1].key - 1);
-  deleteMin();
+  // Check whether integer underflow occured
+  if (data[1].key - 1 < data[1].key) {
+    setKey(id, data[1].key - 1);
+    deleteMin();
+  }
+  // Use alternative method of removing if root is -infinity
+  else {
+    int current_pos = get_pos(phn);
+    str_map.remove(data[current_pos].id);
+    data[current_pos].id = data[size].id;
+    data[current_pos].key = data[size].key;	
+    data[current_pos].p_data = data[size].p_data;
+    str_map.setPointer(data[size].id, &(data[current_pos]));
+    --size;
+    percolate_down(current_pos);
+  }
   return 0;
 }
 
@@ -163,11 +177,14 @@ void heap::percolate_down(int current_pos) {
 	// percolating down
 	break;
       }
+      else {
+	break;
+      }
     }
     // Has two children
     else {
       // Figure out which child is smaller
-      int smaller_child_index = data[current_pos * 2].key < data[current_pos * 2 + 1].key ? current_pos * 2 : current_pos * 2 + 1;
+      int smaller_child_index = data[current_pos * 2].key <= data[current_pos * 2 + 1].key ? current_pos * 2 : current_pos * 2 + 1;
       // If belongs below its smaller child
       if (key_value > data[smaller_child_index].key) {
 	// Move up smaller child values
@@ -177,6 +194,9 @@ void heap::percolate_down(int current_pos) {
 	// Change the hash table pointer to point to new spot
 	str_map.setPointer(data[smaller_child_index].id, &(data[current_pos]));
 	current_pos = smaller_child_index;
+      }
+      else {
+	break;
       }
     }
   }
