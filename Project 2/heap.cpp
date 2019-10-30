@@ -97,21 +97,8 @@ int heap::remove(const std::string& id, int* p_key, void* pp_data) {
   }
   // Change to be less than the minimum and then call deleteMin
   // Check whether integer underflow occured
-  if (data[1].key - 1 < data[1].key) {
-    setKey(id, data[1].key - 1);
-    deleteMin();
-  }
-  // Use alternative method of removing if root is -infinity
-  else {
-    int current_pos = get_pos(phn);
-    str_map.remove(data[current_pos].id);
-    data[current_pos].id = data[size].id;
-    data[current_pos].key = data[size].key;	
-    data[current_pos].p_data = data[size].p_data;
-    str_map.setPointer(data[size].id, &(data[current_pos]));
-    --size;
-    percolate_down(current_pos);
-  }
+  setKey(id, data[1].key - 1);
+  deleteMin();
   return 0;
 }
 
