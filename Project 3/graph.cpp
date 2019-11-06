@@ -5,20 +5,22 @@ void Graph::insert(const std::string& start, const std::string& destination, int
   bool start_is_in = find_vertex.contains(start);
   // If it's not in the graph, add it to the list of vertices
   if (!start_is_in) {
-    Vertex* v = new Vertex;
-    v->name = start;
-    vertices.push_back(v);
+    Vertex* vs = new Vertex;
+    vs->name = start;
+    vertices.push_back(vs);
     std::list<Vertex*>::iterator new_vertex = vertices.end();
+    --new_vertex;
     // Telling the hash table to point to Vertex*
     find_vertex.insert(start, *new_vertex);
   }
   // Same as above but checking if the destination vertex is in the graph yet
   bool destination_is_in = find_vertex.contains(destination);
   if (!destination_is_in) {
-    Vertex* v = new Vertex;
-    v->name = destination;
-    vertices.push_back(v);
+    Vertex* vd = new Vertex;
+    vd->name = destination;
+    vertices.push_back(vd);
     std::list<Vertex*>::iterator new_vertex = vertices.end();
+    --new_vertex;
     find_vertex.insert(destination, *new_vertex);
   }
   // At this point both vertices are in the graph
@@ -51,16 +53,19 @@ void Graph::dijkstra(const std::string start_vertex) {
   // At this point the priority is full with all vertices and the distances are infinity
   // Decrease key for source to 0
   distances_from_source.setKey(start_vertex, 0);
-  ///////////////////////////////////////////////////
   while (true) {
     std::string id;
     int key;
-    void* pp_data;
-    int status = distances_from_source.deleteMin(&id, &key, pp_data);
-    if (status == 1) {
+    void* p_data;
+    // Save information about deleted node
+    int status = distances_from_source.deleteMin(&id, &key, &p_data);
+    // If key == INT_MAX then there are no more paths to the rest of the nodes.
+    // If status == 1 then there are no more nodes
+    if (key == INT_MAX || status == 1) {
       break;
     }
-    Vertex* min = static_cast<Vertex*>(pp_data);
+    // The node with the smallest distance from the source
+    Vertex* min = static_cast<Vertex*>(p_data);
     min->dv = key;
     min->known = true;
     // Traverse outgoing edges to the removed vertex
@@ -72,17 +77,17 @@ void Graph::dijkstra(const std::string start_vertex) {
       Vertex*& pw = destination->pv;
       // Update rule
       if (min->dv + ((*it)->cost) < dw) {
+	// If new path to destination is better, record it
 	dw = min->dv + ((*it)->cost);
 	pw = min;
-	distances_from_source.setKey((*it)->v_name), dw);
-	////////////////////////////////////////
+	distances_from_source.setKey(((*it)->v_name), dw);
       }
     }
   }
 }
 
 std::vector<std::string> Graph::get_path(Vertex* v) {
-  std::vector<std::string> reverse_path(v->name);
+  std::vector<std::string> reverse_path{v->name};
   while (v->pv != nullptr) {
     v = v->pv;
     reverse_path.push_back(v->name);
@@ -92,15 +97,16 @@ std::vector<std::string> Graph::get_path(Vertex* v) {
        rit != reverse_path.rend(); ++rit) {
     path.push_back(*rit);
   }
+  // Path from source to v
   return path;
 }
 
 void Graph::display_results(std::ostream& os) {
   for (std::list<Vertex*>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-    os << ((*it)->name) << ": "
+    os << ((*it)->name) << ": ";
     // No path was found to this vertex
     if ((*it)->dv == INT_MAX) {
-      os << "NO PATH" << "\n";
+      os << "NO PATH\n";
       continue;
     }
     os << ((*it)->dv) << " [";

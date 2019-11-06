@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <ctime>
 
 int main(int argc, char* argv[]) {
   Graph g;
@@ -15,10 +16,13 @@ int main(int argc, char* argv[]) {
     std::istringstream iss(edge);
     std::string vertex1, vertex2;
     int cost;
+    // Extract info from each line
     iss >> vertex1 >> vertex2 >> cost;
     g.insert(vertex1, vertex2, cost);
   }
+  // Graph is fully created by now
   std::string start_vertex_dijkstra;
+  // Will continue prompting until a valid vertex is chosen as the start
   do {
     std::cout << "Enter a valid vertex id for the starting vertex: ";
     std::cin >> start_vertex_dijkstra;

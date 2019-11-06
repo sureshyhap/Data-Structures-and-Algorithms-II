@@ -7,8 +7,12 @@
 #include "hash.h"
 #include "heap.h"
 #include <vector>
+#include <iostream>
 
 class Graph {
+ private:
+  struct Edge;
+  struct Vertex;
  public:
   Graph() = default;
   // Inserts edges (and possibly vertices) into graph
@@ -22,7 +26,6 @@ class Graph {
   // Output the shortest path and its cost for each vertex
   void display_results(std::ostream& os);
  private:
-  struct Edge;
   struct Vertex {
     // List of edges directly connected to this vertex
     std::list<Edge*> adjacency_list;
