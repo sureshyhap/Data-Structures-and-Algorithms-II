@@ -15,6 +15,7 @@ class Graph {
   struct Vertex;
  public:
   Graph() = default;
+  ~Graph();
   // Inserts edges (and possibly vertices) into graph
   void insert(const std::string& start, const std::string& destination, int cost);
   // Check if a start_vertex is in the graph

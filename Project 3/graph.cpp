@@ -1,5 +1,15 @@
 #include "graph.h"
 
+Graph::~Graph() {
+  for (std::list<Vertex*>::iterator vit = vertices.begin(); vit != vertices.end(); ++vit) {
+    for (std::list<Edge*>::iterator eit = (*vit)->adjacency_list.begin();
+	 eit != (*vit)->adjacency_list.end(); ++eit) {
+      delete *eit;
+    }
+    delete *vit;
+  }
+}
+
 void Graph::insert(const std::string& start, const std::string& destination, int cost) {
   // Check if vertex is in the graph yet
   bool start_is_in = find_vertex.contains(start);
