@@ -2,10 +2,18 @@
 #include <string>
 #include <fstream>
 #include <cctype>
+#include <stack>
 
 const int max_letters = 1000;
 
-bool matrix[max_letters] = {{false}};
+bool matrix[max_letters][max_letters] = {{false}};
+
+struct Parameters {
+  Parameters() = default;
+  int i, j;
+};
+
+std::stack<Parameters> s;
 
 bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j);
 std::string retrieve(const std::string& a, const std::string& b);
@@ -22,13 +30,25 @@ int main(int argc, char* argv[]) {
   while (std::getline(infile, a)) {
     std::getline(infile, b);
     std::getline(infile, c);
-    if (check(a, b, c, 0, 0)) {
-      final_str = retrieve(a.length(), b.length());
-      outfile << final_str << '\n';
+    check(a, b, c, 0, 0);
+    final_str = retrieve(a, b);
+    outfile << final_str << '\n';
+
+    ///////////////////////////////////
+
+    
+    for (int i = 0; i <= a.length(); ++i) {
+      for (int j = 0; j <= b.length(); ++j) {
+	std::cout << matrix[i][j];
+      }
+      std::cout << std::endl;
     }
-    else {
-      outfile << "*** NOT A MERGE ***\n";
-    }
+
+
+    ///////////////////////////////////
+
+
+    
     // Reset matrix
     for (int i = 0; i <= a.length(); ++i) {
       for (int j = 0; j <= b.length(); ++j) {
@@ -40,17 +60,65 @@ int main(int argc, char* argv[]) {
 }
 
 bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j) {
+ beginning:
   int length = a.length() + b.length();
   // If the length of c is not the sum of a and b's lengths, it can't be a valid merge
   if (length != c.length()) {
     return false;
   }
-  while (i + j < length) { //////////////////////////////////// Chek if < or <= /////////////////////
-    // No corresponding character of c in either a nor b
+  while (i + j < length) {
+    if (i == a.length()) {
+      if (c[i + j] == b[j]) {
+	matrix[i][j++] = true;
+	continue;
+      }
+      else {
+		  std::cout << s.size() << std::endl;
+	if (!s.empty()) {
+
+
+
+	  
+	  Parameters save_popped = s.top();
+	  s.pop();
+	  i = save_popped.i;
+	  j = save_popped.j;
+	  goto beginning;
+	}
+
+	return false;
+      }
+    }
+    else if (j == b.length()) {
+      if (c[i + j] == a[i]) {
+	matrix[i++][j] = true;
+	continue;
+      }
+      else {
+		  std::cout << s.size() << std::endl;
+	if (!s.empty()) {
+	  Parameters save_popped = s.top();
+	  s.pop();
+	  i = save_popped.i;
+	  j = save_popped.j;
+	  goto beginning;
+	}
+
+	return false;
+      }
+    }
+    // No corresponding character of c in neither a nor b
     if (c[i + j] != a[i] && c[i + j] != b[j]) {
+      	  std::cout << s.size() << std::endl;
+      if (!s.empty()) {
+	Parameters save_popped = s.top();
+	s.pop();
+	i = save_popped.i;
+	j = save_popped.j;
+	goto beginning;
+      }
       return false;
     }
-    ////////////////////////////////////////////// Make sure not at the end of one of the strings
     // There is at least one corresponding character in a or b
     else {
       // Matching character in a only
@@ -64,20 +132,71 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
       // Matching character in both a and b
       else {
 	matrix[i][j] = true;
-	check(a, b, c, i + 1, j);
-	check(a, b, c, i, j + 1);
+	////////////////////////////////// Might run out of stack space
+
+
+	Parameters p2;
+	p2.i = i;
+	p2.j = j + 1;
+
+	s.push(p2);
+
+	Parameters p1;
+	p1.i = i + 1;
+	p1.j = j;
+	
+	s.push(p1);
+	if (!s.empty()) {
+	  Parameters save_popped = s.top();
+	  s.pop();
+	  i = save_popped.i;
+	  j = save_popped.j;
+	  goto beginning;
+	}
+	
+	/*
+	
+	bool first_passes, second_passes;
+	first_passes = check(a, b, c, i + 1, j);
+	second_passes = check(a, b, c, i, j + 1);
+	if (!first_passes && !second_passes) {
+	  return false;
+	}
+	else {
+	  return true;
+	}
+	*/
       }
     }
   }
   // If did not return false yet, c must be a valid merge
+  matrix[i][j] = true;
+  	  std::cout << s.size() << std::endl;
+  if (!s.empty()) {
+    Parameters save_popped = s.top();
+    s.pop();
+    i = save_popped.i;
+    j = save_popped.j;
+    goto beginning;
+  }
   return true;
 }
 
 std::string retrieve(const std::string& a, const std::string& b) {
   int i = a.length(), j = b.length();
+  if (!matrix[i][j]) {
+    return "*** NOT A MERGE ***";
+  }
   std::string result;
-  ////////////////////////////////////////////// Make sure not at the end of one of the strings
   while (i > 0 || j > 0) {
+    if (i == 0) {
+      result += b[--j];
+      continue;
+    }
+    else if (j == 0) {
+      result += toupper(a[--i]);
+      continue;
+    }
     // Came here from a letter from a (along the rows)
     if (matrix[i - 1][j] && !matrix[i][j - 1]) {
       result += toupper(a[--i]);
@@ -93,7 +212,7 @@ std::string retrieve(const std::string& a, const std::string& b) {
       result += b[--j];
     }
   }
-  std::string reversed;
+  std::string reversed = result;
   int length = result.length();
   for (int k = 0; k < length; ++k) {
     reversed[k] = result[length - 1 - k];
