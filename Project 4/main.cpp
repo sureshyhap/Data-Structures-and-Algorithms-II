@@ -8,13 +8,6 @@ const int max_letters = 1000;
 
 bool matrix[max_letters][max_letters] = {{false}};
 
-struct Parameters {
-  Parameters() = default;
-  int i, j;
-};
-
-std::stack<Parameters> s;
-
 bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j);
 std::string retrieve(const std::string& a, const std::string& b);
 
@@ -60,7 +53,6 @@ int main(int argc, char* argv[]) {
 }
 
 bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j) {
- beginning:
   int length = a.length() + b.length();
   // If the length of c is not the sum of a and b's lengths, it can't be a valid merge
   if (length != c.length()) {
@@ -73,19 +65,6 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	continue;
       }
       else {
-		  std::cout << s.size() << std::endl;
-	if (!s.empty()) {
-
-
-
-	  
-	  Parameters save_popped = s.top();
-	  s.pop();
-	  i = save_popped.i;
-	  j = save_popped.j;
-	  goto beginning;
-	}
-
 	return false;
       }
     }
@@ -95,28 +74,11 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	continue;
       }
       else {
-		  std::cout << s.size() << std::endl;
-	if (!s.empty()) {
-	  Parameters save_popped = s.top();
-	  s.pop();
-	  i = save_popped.i;
-	  j = save_popped.j;
-	  goto beginning;
-	}
-
 	return false;
       }
     }
     // No corresponding character of c in neither a nor b
     if (c[i + j] != a[i] && c[i + j] != b[j]) {
-      	  std::cout << s.size() << std::endl;
-      if (!s.empty()) {
-	Parameters save_popped = s.top();
-	s.pop();
-	i = save_popped.i;
-	j = save_popped.j;
-	goto beginning;
-      }
       return false;
     }
     // There is at least one corresponding character in a or b
@@ -132,30 +94,7 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
       // Matching character in both a and b
       else {
 	matrix[i][j] = true;
-	////////////////////////////////// Might run out of stack space
-
-
-	Parameters p2;
-	p2.i = i;
-	p2.j = j + 1;
-
-	s.push(p2);
-
-	Parameters p1;
-	p1.i = i + 1;
-	p1.j = j;
-	
-	s.push(p1);
-	if (!s.empty()) {
-	  Parameters save_popped = s.top();
-	  s.pop();
-	  i = save_popped.i;
-	  j = save_popped.j;
-	  goto beginning;
-	}
-	
-	/*
-	
+	////////////////////////////////// Might run out of stack space	
 	bool first_passes, second_passes;
 	first_passes = check(a, b, c, i + 1, j);
 	second_passes = check(a, b, c, i, j + 1);
@@ -165,20 +104,11 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	else {
 	  return true;
 	}
-	*/
       }
     }
   }
   // If did not return false yet, c must be a valid merge
   matrix[i][j] = true;
-  	  std::cout << s.size() << std::endl;
-  if (!s.empty()) {
-    Parameters save_popped = s.top();
-    s.pop();
-    i = save_popped.i;
-    j = save_popped.j;
-    goto beginning;
-  }
   return true;
 }
 
