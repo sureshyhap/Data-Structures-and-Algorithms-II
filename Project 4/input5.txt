@@ -16,6 +16,6 @@ abab
 zzzzzzzzzzzzzzzzzzzzab
 zzzzzzzzzzzzzzzzzzzzac
 zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzacab
-zzzzzzzzzzzzzzzzzzzzabc
-zzzzzzzzzzzzzzzzzzzzacb
-zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzabcbac
+abc
+acb
+abcbac

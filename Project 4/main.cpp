@@ -2,13 +2,17 @@
 #include <string>
 #include <fstream>
 #include <cctype>
-#include <stack>
+#include <vector>
 
 const int max_letters = 1000;
 
 bool matrix[max_letters][max_letters] = {{false}};
 
-bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j);
+struct Index {
+  int i = 0, j = 0;
+};
+
+bool check(const std::string& a, const std::string& b, const std::string& c);
 std::string retrieve(const std::string& a, const std::string& b);
 
 int main(int argc, char* argv[]) {
@@ -23,7 +27,7 @@ int main(int argc, char* argv[]) {
   while (std::getline(infile, a)) {
     std::getline(infile, b);
     std::getline(infile, c);
-    check(a, b, c, 0, 0);
+    check(a, b, c);
     final_str = retrieve(a, b);
     outfile << final_str << '\n';
 
@@ -52,13 +56,29 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j) {
- beginning:
+
+bool check(const std::string& a, const std::string& b, const std::string& c) {
   int length = a.length() + b.length();
   // If the length of c is not the sum of a and b's lengths, it can't be a valid merge
   if (length != c.length()) {
     return false;
   }
+  // Record points in matrix where either way is possible
+  std::vector<Index> branch_points;
+  int i = 0, j = 0;
+
+  //////////////////////
+  /*
+  int smaller = a.length() < b.length() ? a.length() : b.length();
+  // If the strings start the same, either path is ok so choose from a
+  while (i < smaller && a[i] == b[i]) {
+    matrix[i++][j] = true;
+  }
+  while (i < j) {
+    matrix[i][j++] = true;
+  }
+  */
+  ///////////////////////
   while (i + j < length) {
     if (i == a.length()) {
       if (c[i + j] == b[j]) {
@@ -66,7 +86,16 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	continue;
       }
       else {
-	return false;
+	if (!branch_points.empty()) {
+	  Index go_back_to_this = branch_points.back();
+	  branch_points.pop_back();
+	  i = go_back_to_this.i;
+	  j = go_back_to_this.j + 1;
+	  continue;
+	}
+	else {
+	  return false;
+	}
       }
     }
     else if (j == b.length()) {
@@ -75,12 +104,31 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	continue;
       }
       else {
-	return false;
+	if (!branch_points.empty()) {
+	  Index go_back_to_this = branch_points.back();
+	  branch_points.pop_back();
+	  i = go_back_to_this.i;
+	  j = go_back_to_this.j + 1;
+	  continue;
+	}
+	else {
+	  return false;
+	}
       }
     }
+    ////////////////     for (int k = )
     // No corresponding character of c in neither a nor b
     if (c[i + j] != a[i] && c[i + j] != b[j]) {
-      return false;
+      if (!branch_points.empty()) {
+	Index go_back_to_this = branch_points.back();
+	branch_points.pop_back();
+	i = go_back_to_this.i;
+	j = go_back_to_this.j + 1;
+	continue;
+      }
+      else {
+	return false;
+      }
     }
     // There is at least one corresponding character in a or b
     else {
@@ -95,7 +143,15 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
       // Matching character in both a and b
       else {
 	matrix[i][j] = true;
-	////////////////////////////////// Might run out of stack space	
+	Index ind;
+	ind.i = i;
+	ind.j = j;
+	branch_points.push_back(ind);
+	++i;
+
+	
+	////////////////////////////////// Might run out of stack space
+	/*
 	bool first_passes, second_passes;
 	first_passes = check(a, b, c, i + 1, j);
 	if (!first_passes) {
@@ -110,6 +166,7 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	else {
 	  return true;
 	}
+	*/
 	/*
 	if (!first_passes && !second_passes) {
 	  return false;
