@@ -53,6 +53,7 @@ int main(int argc, char* argv[]) {
 }
 
 bool check(const std::string& a, const std::string& b, const std::string& c, int i, int j) {
+ beginning:
   int length = a.length() + b.length();
   // If the length of c is not the sum of a and b's lengths, it can't be a valid merge
   if (length != c.length()) {
@@ -97,13 +98,26 @@ bool check(const std::string& a, const std::string& b, const std::string& c, int
 	////////////////////////////////// Might run out of stack space	
 	bool first_passes, second_passes;
 	first_passes = check(a, b, c, i + 1, j);
-	second_passes = check(a, b, c, i, j + 1);
+	if (!first_passes) {
+	  second_passes = check(a, b, c, i, j + 1);
+	  if (!second_passes) {
+	    return false;
+	  }
+	  else {
+	    return true;
+	  }
+	}
+	else {
+	  return true;
+	}
+	/*
 	if (!first_passes && !second_passes) {
 	  return false;
 	}
 	else {
 	  return true;
 	}
+	*/
       }
     }
   }
