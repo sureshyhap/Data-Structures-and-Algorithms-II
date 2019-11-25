@@ -3,10 +3,11 @@
 #include <fstream>
 #include <cctype>
 #include <vector>
+#include <ctime>
 
-const int max_letters = 1000;
+const int MAX_LETTERS = 1000;
 
-bool matrix[max_letters][max_letters] = {{false}};
+bool matrix[MAX_LETTERS][MAX_LETTERS] = {{false}};
 
 struct Index {
   int i = 0, j = 0;
@@ -29,23 +30,7 @@ int main(int argc, char* argv[]) {
     std::getline(infile, c);
     check(a, b, c);
     final_str = retrieve(a, b);
-    outfile << final_str << '\n';
-
-    ///////////////////////////////////
-
-    
-    for (int i = 0; i <= a.length(); ++i) {
-      for (int j = 0; j <= b.length(); ++j) {
-	std::cout << matrix[i][j];
-      }
-      std::cout << std::endl;
-    }
-
-
-    ///////////////////////////////////
-
-
-    
+    outfile << final_str << '\n';    
     // Reset matrix
     for (int i = 0; i <= a.length(); ++i) {
       for (int j = 0; j <= b.length(); ++j) {
@@ -56,30 +41,28 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-
 bool check(const std::string& a, const std::string& b, const std::string& c) {
   int length = a.length() + b.length();
   // If the length of c is not the sum of a and b's lengths, it can't be a valid merge
   if (length != c.length()) {
     return false;
-  }
+  }  
   // Record points in matrix where either way is possible
   std::vector<Index> branch_points;
   int i = 0, j = 0;
-
-  //////////////////////
-  /*
-  int smaller = a.length() < b.length() ? a.length() : b.length();
-  // If the strings start the same, either path is ok so choose from a
-  while (i < smaller && a[i] == b[i]) {
-    matrix[i++][j] = true;
-  }
-  while (i < j) {
-    matrix[i][j++] = true;
-  }
-  */
-  ///////////////////////
+  // Arbitrarily choose a maximum of 5 seconds for the function to run
+  const int MAX_TIME_ALLOWED = 1;
+  clock_t time1 = clock();
   while (i + j < length) {
+    clock_t time2 = clock();
+    // My algorithm should be able to quickly terminate when c is a merge.
+    // However it hangs on some cases where c is not a merge. So if it takes
+    // too long, I assume c is not a merge. Thus my solution for these cases
+    // is an approximate one
+    double time_diff = (double(time2 - time1)) / CLOCKS_PER_SEC;
+    if (time_diff > MAX_TIME_ALLOWED) {
+      return false;
+    }
     if (i == a.length()) {
       if (c[i + j] == b[j]) {
 	matrix[i][j++] = true;
@@ -116,7 +99,6 @@ bool check(const std::string& a, const std::string& b, const std::string& c) {
 	}
       }
     }
-    ////////////////     for (int k = )
     // No corresponding character of c in neither a nor b
     if (c[i + j] != a[i] && c[i + j] != b[j]) {
       if (!branch_points.empty()) {
@@ -143,38 +125,13 @@ bool check(const std::string& a, const std::string& b, const std::string& c) {
       // Matching character in both a and b
       else {
 	matrix[i][j] = true;
+	// Recording this junction for later
+	// in case there is a need to return to this point
 	Index ind;
 	ind.i = i;
 	ind.j = j;
 	branch_points.push_back(ind);
 	++i;
-
-	
-	////////////////////////////////// Might run out of stack space
-	/*
-	bool first_passes, second_passes;
-	first_passes = check(a, b, c, i + 1, j);
-	if (!first_passes) {
-	  second_passes = check(a, b, c, i, j + 1);
-	  if (!second_passes) {
-	    return false;
-	  }
-	  else {
-	    return true;
-	  }
-	}
-	else {
-	  return true;
-	}
-	*/
-	/*
-	if (!first_passes && !second_passes) {
-	  return false;
-	}
-	else {
-	  return true;
-	}
-	*/
       }
     }
   }
