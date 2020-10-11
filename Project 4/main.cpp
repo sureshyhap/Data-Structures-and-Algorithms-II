@@ -7,7 +7,7 @@
 
 const int MAX_LETTERS = 1000;
 
-bool matrix[MAX_LETTERS][MAX_LETTERS] = {{false}};
+bool matrix[MAX_LETTERS + 1][MAX_LETTERS + 1] = {{false}};
 
 struct Index {
   int i = 0, j = 0;
@@ -51,7 +51,7 @@ bool check(const std::string& a, const std::string& b, const std::string& c) {
   std::vector<Index> branch_points;
   int i = 0, j = 0;
   // Arbitrarily choose a maximum of 5 seconds for the function to run
-  const int MAX_TIME_ALLOWED = 1;
+  const int MAX_TIME_ALLOWED = 5;
   clock_t time1 = clock();
   while (i + j < length) {
     clock_t time2 = clock();
