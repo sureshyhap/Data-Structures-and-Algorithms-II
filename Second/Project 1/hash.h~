@@ -1,0 +1,10 @@
+#ifndef HASH_H
+#define HASH_H
+
+class Hash_Table {
+ public:
+  Hash_Table(int size = 0);
+ private:
+};
+
+#endif // HASH_H

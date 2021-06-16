@@ -1,0 +1,5 @@
+#include "hash.h"
+
+Hash_Table::Hash_Table {
+  
+}
