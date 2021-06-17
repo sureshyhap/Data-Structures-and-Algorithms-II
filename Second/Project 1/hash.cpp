@@ -35,6 +35,44 @@ bool Hash_Table::contains(const std::string& key) const {
   return (find_pos(key) != -1);
 }
 
+void* Hash_Table::get_pointer(const std::string& key, bool* b) {
+  int position = find_pos(key);
+  if (position == -1) {
+    if (b) {
+      *b = false;
+    }
+    return nullptr;
+  }
+  else {
+    if (b) {
+      *b = true;
+    }
+    return data[position].pv;
+  }
+}
+
+int Hash_Table::set_pointer(const std::string& key, void* pv) {
+  int position = find_pos(key);
+  if (position == -1) {
+    return 1;
+  }
+  else {
+    data[position].pv = pv;
+    return 0;
+  }
+}
+
+bool Hash_Table::remove(const std::string& key) {
+  int position = find_pos(key);
+  if (position == -1) {
+    return false;
+  }
+  else {
+    data[position].is_deleted = true;
+    return true;
+  }
+}
+
 int Hash_Table::hash(const std::string& key) const {
   int hash_val = 0;
   int length = key.length();

@@ -17,6 +17,18 @@ class Hash_Table {
   int insert(const std::string& key, void* pv = nullptr);
   // Returns true if key is in Hash_Table; false if not
   bool contains(const std::string& key) const;
+  // Returns pointer associated with key
+  // Returns nullptr if key is not in Hash_Table
+  // bool* serves to differentiate between cases where
+  // key is not in table vs. key is in table but pointer
+  // associated with it is nullptr
+  void* get_pointer(const std::string& key, bool* b = nullptr);
+  // Sets pointer associated with key to pv
+  // Returns 0 on success
+  // Returns 1 if key is not in Hash_Table
+  int set_pointer(const std::string& key, void* pv);
+  // Lazily deletes Hash_Item with given key
+  bool remove(const std::string& key);
  private:
   // Each element of the Hash_Table
   class Hash_Item {
