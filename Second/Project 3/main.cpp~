@@ -1,0 +1,37 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include "graph.h"
+
+int main(int argc, char* argv[]) {
+  std::string input_filename;
+  std::cout << "Enter name of graph file: ";
+  std::cin >> input_filename;
+  std::ifstream infile(input_filename);
+  std::string line;
+  graph g;
+  while (std::getline(infile, line)) {
+    std::istringstream iss(line);
+    std::string source_vertex, destination_vertex;
+    int cost = {};
+    iss >> source_vertex >> destination_vertex >> cost;
+    g.insert(source_vertex, destination_vertex, cost);
+  }
+  do {
+    std::string starting_vertex;
+    std::cout << "Enter a valid vertex id for the starting vertex: ";
+    std::cin >> starting_vertex;
+  } while (!g.check_start(starting_vertex));
+  clock_t start = clock();
+  g.run_dijkstra(starting_vertex);
+  clock_t end = clock();
+  double elapsed = (static_cast<double>(end) - start) / CLOCKS_PER_SEC;
+  std::cout << "Total time (in seconds) to apply Dijkstra's algorithm: " << elapsed << '\n';
+  std::string output_filename;
+  std::cout << "Enter name of output file: ";
+  std::cin >> output_filename;
+  std::ofstream outfile(output_filename);
+  display_results(outfile);
+  return 0;
+}
