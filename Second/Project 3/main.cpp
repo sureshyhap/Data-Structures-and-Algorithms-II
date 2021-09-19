@@ -26,12 +26,14 @@ int main(int argc, char* argv[]) {
   clock_t start = clock();
   g.run_dijkstra(starting_vertex);
   clock_t end = clock();
-  double elapsed = (static_cast<double>(end) - start) / CLOCKS_PER_SEC;
+  double elapsed = (static_cast<double>(end - start)) / CLOCKS_PER_SEC;
   std::cout << "Total time (in seconds) to apply Dijkstra's algorithm: " << elapsed << '\n';
   std::string output_filename;
   std::cout << "Enter name of output file: ";
   std::cin >> output_filename;
   std::ofstream outfile(output_filename);
   g.display_results(outfile);
+  infile.close();
+  outfile.close();
   return 0;
 }
